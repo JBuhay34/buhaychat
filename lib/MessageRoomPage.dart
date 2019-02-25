@@ -13,6 +13,8 @@ class MessageRoomPage extends StatefulWidget {
 
 class _MessageRoomPageState extends State<MessageRoomPage> {
   MessageContent content;
+  FocusNode myFocusNode;
+  final messageController = TextEditingController();
 
   _MessageRoomPageState(MessageContent content) {
     this.content = content;
@@ -22,6 +24,15 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    myFocusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    messageController.dispose();
+    myFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -45,10 +56,31 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
                     children: <Widget>[
                       Expanded(
                           child: TextField(
-                        autofocus: true,
-                      )),
+                              controller: messageController,
+                              focusNode: myFocusNode,
+                              decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Send a message...'
+                              )
+                          )
+                      ),
                       IconButton(
                         onPressed: () {},
+                        icon: Icon(Icons.album),
+                        iconSize: 40,
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          return showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  // Retrieve the text the user has typed in using our
+                                  // TextEditingController
+                                  content: Text(messageController.text),
+                                );
+                              });
+                        },
                         icon: Icon(Icons.send),
                         iconSize: 40,
                       )
