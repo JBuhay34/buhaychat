@@ -38,19 +38,37 @@ class _SampleAppPageState extends State<SampleAppPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          leading: new Icon(Icons.menu),
           title: Text("Messages"),
           actions: <Widget>[
             new IconButton(
                 icon: new Icon(Icons.add),
                 onPressed: (){}
-                )]
+                )
+          ]
+        ),
+        drawer: new Drawer(
+          child: new ListView(
+            children: <Widget>[
+              new DrawerHeader(child: new Text("BuhayMessage"),
+              decoration: new BoxDecoration(
+                color: Colors.blue
+              ),
+        ),
+              new Text("Sign out"),
+              new Text("Import Contacts")
+            ],
+          )
         ),
         body: ListView.builder(
             itemCount: widgets.length,
             itemBuilder: (BuildContext context, int position) {
               return getRow(position);
-            }));
+            }),
+        floatingActionButton: new FloatingActionButton(
+          onPressed: (){},
+          child: new Icon(Icons.message),
+        ),
+    );
   }
 
   Widget getRow(int i) {
