@@ -4,7 +4,7 @@ class MessageContent {
   String message;
   bool hasRead;
 
-  MessageContent(this.sender, this.time, this.message, this.hasRead);
+  MessageContent(this.message, this.sender, this.time, this.hasRead);
 
 
   String getSender() => this.sender;
@@ -18,9 +18,9 @@ class MessageContent {
 
 class MessageGenerator {
   static var messageList = [
-    MessageContent("Happy Halloween", "John Doe", "2:30 PM",
+    MessageContent("Hello Babe", "Katherine Cariaso", "2:30 PM",
         true),
-    MessageContent("Happy Halloween", "John Doe", "31 Oct",
+    MessageContent("Go Home ka na", "Mom", "31 Oct",
         false),
   ];
 
