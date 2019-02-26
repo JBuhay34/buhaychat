@@ -1,10 +1,11 @@
-import 'package:buhaychat/object/Message.dart';
+import 'package:buhaychat/object/Contact.dart';
+import 'package:buhaychat/object/MessageWithPerson.dart';
 import 'package:flutter/material.dart';
 
 class MessageRoomPage extends StatefulWidget {
-  MessageContent content;
+  Contact content;
 
-  MessageRoomPage({Key key, MessageContent content}) : super(key: key) {
+  MessageRoomPage({Key key, Contact content}) : super(key: key) {
     this.content = content;
   }
 
@@ -12,11 +13,16 @@ class MessageRoomPage extends StatefulWidget {
 }
 
 class _MessageRoomPageState extends State<MessageRoomPage> {
-  MessageContent content;
+
+  Contact content;
+  MessageWithPerson messageWithPerson;
   FocusNode myFocusNode;
   final messageController = TextEditingController();
 
-  _MessageRoomPageState(MessageContent content) {
+  Container bottomContainer;
+  Container messageListViewContainer;
+
+  _MessageRoomPageState(Contact content) {
     this.content = content;
   }
 
@@ -25,6 +31,67 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
     // TODO: implement initState
     super.initState();
     myFocusNode = FocusNode();
+    messageListViewContainer = Container(
+      child: ListView.builder(
+        itemCount: MessageWithPersonGenerator.messageListLength,
+        itemBuilder: (BuildContext context, int position) {
+          return getRow(position);
+        },
+      ),
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(color: Colors.lightBlue.shade50,)
+          )
+      ),
+    );
+
+
+    bottomContainer = Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(left: 20, bottom: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Expanded(
+                      child: TextField(
+                          controller: messageController,
+                          focusNode: myFocusNode,
+                          decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Send a message...'
+                          )
+                      )
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.album),
+                    iconSize: 40,
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      return showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              // Retrieve the text the user has typed in using our
+                              // TextEditingController
+                              content: Text(messageController.text),
+                            );
+                          });
+                    },
+                    icon: Icon(Icons.send),
+                    iconSize: 40,
+                  )
+                ],
+              ))
+        ],
+      ),
+    );
   }
 
   @override
@@ -35,6 +102,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -42,54 +110,60 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
       appBar: AppBar(
         title: Text(content.getSender()),
       ),
-      body: Center(
-        child: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
+      body: Container(
+        child: Column(
+            children: <Widget>[
+              Expanded(child: messageListViewContainer,),
+
+              bottomContainer,
+            ]
+        ),
+
+      ),
+    );
+  }
+
+
+  // ListView for the message content
+  Widget getRow(int i) {
+
+    MessageWithPerson messageContent = MessageWithPersonGenerator
+        .getMessageWithPersonContent(i);
+    
+    // this Container has the message
+    Container MyMessage = Container(
+        padding: EdgeInsets.only(
+            left: 14.0, right: 14.0, top: 5.0, bottom: 10.0),
+        decoration: BoxDecoration(
+            border: Border(
+                bottom: BorderSide(color: Colors.lightBlue.shade50),
+            )
+        ),
+        child: Text(messageContent.getMessage())
+    );
+
+
+
+    return GestureDetector(
+      child: (
+      // Is it you ? that sent the message.
+          messageContent.isYou ? Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              Padding(
-                  padding: EdgeInsets.only(left: 20, right: 20, bottom: 40),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Expanded(
-                          child: TextField(
-                              controller: messageController,
-                              focusNode: myFocusNode,
-                              decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Send a message...'
-                              )
-                          )
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.album),
-                        iconSize: 40,
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          return showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  // Retrieve the text the user has typed in using our
-                                  // TextEditingController
-                                  content: Text(messageController.text),
-                                );
-                              });
-                        },
-                        icon: Icon(Icons.send),
-                        iconSize: 40,
-                      )
-                    ],
-                  ))
+              MyMessage
             ],
-          ),
-        ),
-      ),
+          ) : Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              MyMessage
+            ],
+
+          )),
+
+
+      onTap: () {
+
+      },
     );
   }
 }

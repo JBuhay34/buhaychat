@@ -1,5 +1,5 @@
 import 'package:buhaychat/MessageRoomPage.dart';
-import 'package:buhaychat/object/Message.dart';
+import 'package:buhaychat/object/Contact.dart';
 import 'package:flutter/material.dart';
 
 class MainAppPage extends StatefulWidget {
@@ -12,7 +12,7 @@ class MainAppPage extends StatefulWidget {
 class _MainPageState extends State<MainAppPage> {
 
 
-  var drawer = new Drawer(
+  Drawer drawer = new Drawer(
       child: new ListView(
         children: <Widget>[
           DrawerHeader(child: Text("BuhayMessage"),
@@ -47,7 +47,7 @@ class _MainPageState extends State<MainAppPage> {
       drawer: drawer,
       body: ListView.builder(
           padding: EdgeInsets.all(8.0),
-          itemCount: MessageGenerator.messageList.length,
+          itemCount: ContactGenerator.contactList.length,
           itemBuilder: (BuildContext context, int position) {
             return getRow(position);
           }),
@@ -60,12 +60,18 @@ class _MainPageState extends State<MainAppPage> {
 
 // ListView for the message content
   Widget getRow(int i) {
-    MessageContent messageContent = MessageGenerator.getMessageContent(i);
+    Contact contactContent = ContactGenerator.getContactContent(i);
     return GestureDetector(
-        child: Column(children: <Widget>[
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color:Colors.lightBlue.shade50)
+            )
+          ),
+          child: Column(children: <Widget>[
           Padding(
             padding: EdgeInsets.only(
-                left: 14.0, right: 14.0, top: 5.0, bottom: 5.0),
+                left: 14.0, right: 14.0, top: 5.0, bottom: 10.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
@@ -83,14 +89,14 @@ class _MainPageState extends State<MainAppPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              messageContent.getSender(),
+                              contactContent.getSender(),
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: Colors.black87,
                                   fontSize: 17.0),
                             ),
                             Text(
-                              messageContent.getTime(),
+                              contactContent.getTime(),
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: Colors.black54,
@@ -107,7 +113,7 @@ class _MainPageState extends State<MainAppPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  messageContent.getMessage(),
+                                  contactContent.getMessage(),
                                   style: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       color: Colors.black54,
@@ -127,10 +133,11 @@ class _MainPageState extends State<MainAppPage> {
           ),
         ]
         ),
+        ),
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => MessageRoomPage(content: messageContent)),
+            MaterialPageRoute(builder: (context) => MessageRoomPage(content: contactContent)),
           );
 
           setState(() {
