@@ -4,34 +4,51 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MessageRoomPage extends StatefulWidget {
-  DocumentSnapshot content;
+  String contactID;
 
-  MessageRoomPage({Key key, DocumentSnapshot content}) : super(key: key) {
-    this.content = content;
+  MessageRoomPage({Key key, String contactID}) : super(key: key) {
+    this.contactID = contactID;
   }
 
-  _MessageRoomPageState createState() => _MessageRoomPageState(content);
+  _MessageRoomPageState createState() => _MessageRoomPageState(contactID);
 }
 
 class _MessageRoomPageState extends State<MessageRoomPage> {
 
+  String contactID;
   DocumentSnapshot content;
   MessageWithPerson messageWithPerson;
   FocusNode myFocusNode;
   final messageController = TextEditingController();
+  String contactName = "Name";
+
+  DocumentReference docRef;
+
 
   Container bottomContainer;
   Container messageListViewContainer;
 
-  _MessageRoomPageState(DocumentSnapshot snapshot) {
-    this.content = content;
+  _MessageRoomPageState(String contactID) {
+    this.contactID = contactID;
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    myFocusNode = FocusNode();
+
+    docRef = Firestore.instance.collection('currentUser').document(contactID);
+    Future function() async {
+      DocumentSnapshot result = await docRef.get();
+      contactName = result["name"];
+      print(contactName);
+
+    }
+    function().whenComplete((){
+      setState(() {
+        contactName = contactName;
+      });
+    });
     messageListViewContainer = Container(
       child: ListView.builder(
         itemCount: MessageWithPersonGenerator.messageListLength,
@@ -104,12 +121,14 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
   }
 
 
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Scaffold(
+    Scaffold scaffold = Scaffold(
       appBar: AppBar(
-        title: Text(content['sender']),
+
+        title: Text(contactName),
       ),
       body: Container(
         child: Column(
@@ -122,6 +141,11 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
 
       ),
     );
+
+
+    return scaffold;
+
+
   }
 
 

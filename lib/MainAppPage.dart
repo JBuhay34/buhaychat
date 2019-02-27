@@ -157,7 +157,7 @@ class _MainPageState extends State<MainAppPage> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => MessageRoomPage(content: document)),
+            MaterialPageRoute(builder: (context) => MessageRoomPage(contactID: document.documentID)),
           );
 
           setState(() {
