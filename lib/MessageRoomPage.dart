@@ -37,6 +37,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
     // TODO: implement initState
     super.initState();
 
+    // This will get the users name and setstate for when it retrieves it
     docRef = Firestore.instance.collection('currentUser').document(contactID);
     Future function() async {
       DocumentSnapshot result = await docRef.get();
@@ -49,6 +50,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
         contactName = contactName;
       });
     });
+
     messageListViewContainer = Container(
       child: ListView.builder(
         itemCount: MessageWithPersonGenerator.messageListLength,
@@ -115,8 +117,12 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
   @override
   void dispose() {
     // TODO: implement dispose
-    messageController.dispose();
-    myFocusNode.dispose();
+    if(messageController != null) {
+      messageController.dispose();
+    }
+    if(myFocusNode != null){
+      myFocusNode.dispose();
+    }
     super.dispose();
   }
 
