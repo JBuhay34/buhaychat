@@ -1,6 +1,7 @@
 import 'package:buhaychat/MessageRoomPage.dart';
 import 'package:buhaychat/object/Contact.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MainAppPage extends StatefulWidget {
   MainAppPage({Key key}) : super(key: key);
@@ -32,6 +33,10 @@ class _MainPageState extends State<MainAppPage> {
 
   }
 
+  DocumentReference favoritesReference =
+  Firestore.instance.collection('users').document("Justin");
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,22 +50,37 @@ class _MainPageState extends State<MainAppPage> {
           ]
       ),
       drawer: drawer,
-      body: ListView.builder(
-          padding: EdgeInsets.all(8.0),
-          itemCount: ContactGenerator.contactList.length,
-          itemBuilder: (BuildContext context, int position) {
-            return getRow(position);
-          }),
+      body: StreamBuilder(
+        stream: Firestore.instance.collection('currentUser').snapshots(),
+        builder: (context, snapshot) {
+          if(!snapshot.hasData){
+            return Text("Loading...");
+          } else{
+
+              return ListView.builder(
+              padding: EdgeInsets.all(8.0),
+              itemCount: snapshot.data.documents.length,
+              itemBuilder: (BuildContext context, int position) {
+                return _getRow(snapshot.data.documents[position]);
+              });
+
+          }
+
+        }
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){},
+        onPressed: (){
+
+        },
         child: Icon(Icons.message),
       ),
     );
   }
 
 // ListView for the message content
-  Widget getRow(int i) {
-    Contact contactContent = ContactGenerator.getContactContent(i);
+  Widget _getRow(DocumentSnapshot document) {
+
+
     return GestureDetector(
         child: Container(
           decoration: BoxDecoration(
@@ -89,14 +109,14 @@ class _MainPageState extends State<MainAppPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              contactContent.getSender(),
+                              document['name'],
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: Colors.black87,
                                   fontSize: 17.0),
                             ),
                             Text(
-                              contactContent.getTime(),
+                              document['time'],
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: Colors.black54,
@@ -113,7 +133,7 @@ class _MainPageState extends State<MainAppPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  contactContent.getMessage(),
+                                  document['message'],
                                   style: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       color: Colors.black54,
@@ -137,7 +157,7 @@ class _MainPageState extends State<MainAppPage> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => MessageRoomPage(content: contactContent)),
+            MaterialPageRoute(builder: (context) => MessageRoomPage(content: document)),
           );
 
           setState(() {

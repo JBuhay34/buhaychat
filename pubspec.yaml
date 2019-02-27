@@ -12,7 +12,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  firebase_core: ^0.3.0  # add dependency for Firebase Core
   cupertino_icons: ^0.1.2
+  cloud_firestore: ^0.9.5+2
 
 dev_dependencies:
   flutter_test:

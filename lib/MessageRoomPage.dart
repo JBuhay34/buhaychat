@@ -1,11 +1,12 @@
 import 'package:buhaychat/object/Contact.dart';
 import 'package:buhaychat/object/MessageWithPerson.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MessageRoomPage extends StatefulWidget {
-  Contact content;
+  DocumentSnapshot content;
 
-  MessageRoomPage({Key key, Contact content}) : super(key: key) {
+  MessageRoomPage({Key key, DocumentSnapshot content}) : super(key: key) {
     this.content = content;
   }
 
@@ -14,7 +15,7 @@ class MessageRoomPage extends StatefulWidget {
 
 class _MessageRoomPageState extends State<MessageRoomPage> {
 
-  Contact content;
+  DocumentSnapshot content;
   MessageWithPerson messageWithPerson;
   FocusNode myFocusNode;
   final messageController = TextEditingController();
@@ -22,7 +23,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
   Container bottomContainer;
   Container messageListViewContainer;
 
-  _MessageRoomPageState(Contact content) {
+  _MessageRoomPageState(DocumentSnapshot snapshot) {
     this.content = content;
   }
 
@@ -108,7 +109,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text(content.getSender()),
+        title: Text(content['sender']),
       ),
       body: Container(
         child: Column(
