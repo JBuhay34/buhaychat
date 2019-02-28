@@ -1,5 +1,6 @@
 import 'package:buhaychat/MainAppPage.dart';
 import 'package:buhaychat/RegisterPage.dart';
+import 'package:buhaychat/SplashPage.dart';
 import 'package:flutter/material.dart';
 
 
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: RegisterPage(),//MainAppPage(),
+      home: SplashPage(),//MainAppPage(),
     );
   }
 }

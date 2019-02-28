@@ -221,11 +221,8 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
     });
 
 
-
     DocumentReference ref2 = Firestore.instance.collection('userContacts')
         .document(UID).collection("contacts").document(friendEmail);
-
-
 
     ref2.updateData({
       'message': message,
@@ -236,11 +233,12 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
     DocumentReference ref3 = Firestore.instance.collection('userContacts')
         .document(friendUID).collection("contacts").document(userEmail);
 
-
     ref3.updateData({
       'message': message,
       'sender': UID,
     });
+
+    messageController.value = TextEditingValue(text: "");
 
     _controller.animateTo(_controller.position.maxScrollExtent,
         duration: const Duration(microseconds: 300), curve: Curves.easeOut);

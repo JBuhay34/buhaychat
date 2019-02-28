@@ -131,13 +131,31 @@ class _AddContactPageState extends State<AddContactPage> {
               "numOfMembers": array.length,
               "name": "Whats up"
             });
+            showDialog(
+                context: context,
+                builder:(BuildContext context){
+                  return AlertDialog(
+                    // Retrieve the text the user has typed in using our
+                    // TextEditingController
+                    title: Text(myController.value.text + " added"),
+                  );
+                }
+            );
 
           } else{
-            AlertDialog(
-              // Retrieve the text the user has typed in using our
-              // TextEditingController
-              content: Text("There is no user with that name"),
+
+            showDialog(
+              context: context,
+              builder:(BuildContext context){
+                return AlertDialog(
+                // Retrieve the text the user has typed in using our
+                // TextEditingController
+                title: Text("There is no user with that name"),
+              );
+              }
             );
+
+            print("No user");
           }
 
 //
