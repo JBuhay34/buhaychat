@@ -129,10 +129,6 @@ class _MainPageState extends State<MainAppPage> {
 // ListView for the message content
   Widget _getRow(DocumentSnapshot document) {
 
-    friendNameClicked =document['nickname'];
-    friendEmail = document['email'];
-    chatRoomID = document['chat'];
-
 
     return GestureDetector(
         child: Container(
@@ -208,7 +204,9 @@ class _MainPageState extends State<MainAppPage> {
           ),
         ),
         onTap: () {
-
+          friendNameClicked =document['nickname'];
+          friendEmail = document['email'];
+          chatRoomID = document['chat'];
           chatRoomID = document['chat'];
           Navigator.push(
             context,
