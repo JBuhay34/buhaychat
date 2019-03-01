@@ -20,14 +20,16 @@ class _SplashPageState extends State<SplashPage> {
     firebaseAuth.currentUser().then((value) {
       FirebaseUser firebaseUser = value;
       if (firebaseUser != null) {
-        Navigator.push(
+
+
+        Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => MainAppPage(UID: firebaseUser.uid, email: firebaseUser.email, userName: firebaseUser.displayName),
             ));
       } else {
-        if (firebaseUser != null) {
-          Navigator.push(
+        if (firebaseUser == null) {
+          Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => RegisterPage(),
@@ -37,8 +39,10 @@ class _SplashPageState extends State<SplashPage> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
-    return CircularProgressIndicator();
+    return Scaffold(body: CircularProgressIndicator(),);
   }
+
 }

@@ -208,6 +208,8 @@ class _MainPageState extends State<MainAppPage> {
           ),
         ),
         onTap: () {
+
+          chatRoomID = document['chat'];
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => MessageRoomPage(friendUID:document['id'],UID: UID, friendEmail: friendEmail, friendName: friendNameClicked, chatRoomID: chatRoomID, userEmail: email, userName: userName)),

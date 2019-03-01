@@ -31,9 +31,13 @@ class RegisterPageState extends State<RegisterPage> {
       idToken: googleAuth.idToken,
     );
 
-    final FirebaseUser user = await firebaseAuth.signInWithCredential(credential);
-    print("signed in " + user.displayName);
-    return user;
+    final FirebaseUser firebaseUser = await firebaseAuth.signInWithCredential(credential);
+    print("signed in " + firebaseUser.displayName);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MainAppPage(UID: firebaseUser.uid,email: firebaseUser.email, userName: firebaseUser.displayName)),
+    );
+    return firebaseUser;
   }
 
   final GoogleSignIn googleSignIn = new GoogleSignIn();
@@ -77,10 +81,7 @@ class RegisterPageState extends State<RegisterPage> {
         }
 
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MainAppPage(UID: firebaseUser.uid,email: firebaseUser.email, userName: firebaseUser.displayName)),
-        );
+
       }
 
     });
@@ -93,7 +94,7 @@ class RegisterPageState extends State<RegisterPage> {
 
 
     return Scaffold(
-        appBar: AppBar(title: Text("Register")),
+        appBar: AppBar(title: Text("Register"),automaticallyImplyLeading: false),
         body: Center(
             child: Column(children: [
           GestureDetector(

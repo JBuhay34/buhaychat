@@ -118,7 +118,6 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
                       String message = messageController.text;
                       if (message.isNotEmpty || message != null || message == '') {
 
-                        print("message is : " + message);
                         sendMessage(message);
                       }
 
@@ -168,6 +167,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
                       .collection("chatmessages")
                       .snapshots(),
                   builder: (context, snapshot) {
+
                     if (!snapshot.hasData) {
                       return Text("Loading...");
                     } else {
