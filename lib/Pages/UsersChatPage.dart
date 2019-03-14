@@ -149,7 +149,7 @@ class _UsersChatPageState extends State<UsersChatPage> {
     if(dateMessage != null || dateMessage == 1 ){
 
       dateString = new DateFormat.yMd().add_jm().format(DateTime.fromMillisecondsSinceEpoch(dateMessage));
-      print("$dateMessage");
+      //print("$dateMessage");
     }
 
 
