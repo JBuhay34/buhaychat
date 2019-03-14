@@ -124,7 +124,7 @@ class _UsersChatPageState extends State<UsersChatPage> {
           //TODO: create a chatroompage
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CreateChatRoomPage(UID: UID, userEmail: userEmail, userName: userName)),
+            MaterialPageRoute(builder: (context) => CreateChatRoomPage(UID: UID, userEmail: userEmail, userName: userName, userPhotoUrl: userPhoto)),
           );
 
         },
@@ -244,7 +244,7 @@ class _UsersChatPageState extends State<UsersChatPage> {
           chatRoomID = document['chatID'];
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => MessageRoomPage( userEmail: userEmail, userName: userName, UID: UID, chatName: chatNameClicked, chatRoomID: chatRoomID)),
+            MaterialPageRoute(builder: (context) => MessageRoomPage(userEmail: userEmail, userName: userName, UID: UID, chatName: chatNameClicked, chatRoomID: chatRoomID, userPhotoUrl: userPhoto)),
           );
 
           setState(() {

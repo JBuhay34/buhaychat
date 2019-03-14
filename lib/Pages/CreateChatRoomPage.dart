@@ -8,15 +8,17 @@ class CreateChatRoomPage extends StatefulWidget {
   String UID;
   String userEmail;
   String userName;
-  CreateChatRoomPage({Key key, String UID, String userEmail, String userName}) : super(key: key){
+  String userPhotoUrl;
+  CreateChatRoomPage({Key key, String UID, String userEmail, String userName, String userPhotoUrl}) : super(key: key){
 
     this.UID = UID;
     this.userEmail = userEmail;
     this.userName = userName;
+    this.userPhotoUrl = userPhotoUrl;
   }
 
   @override
-  _CreateChatRoomPageState createState() => _CreateChatRoomPageState(UID, userEmail, userName);
+  _CreateChatRoomPageState createState() => _CreateChatRoomPageState(UID, userEmail, userName, userPhotoUrl);
 }
 
 class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
@@ -28,12 +30,16 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
   String UID;
   String userEmail;
   String userName;
+  String userPhotoUrl;
   String chatName = "";
+
   final myController = TextEditingController();
 
-  _CreateChatRoomPageState(String UID, String email, String userName){
+
+  _CreateChatRoomPageState(String UID, String email, String userName, String userPhotoUrl){
     this.UID = UID;
     this.userEmail = email;
+    this.userPhotoUrl = userPhotoUrl;
   }
 
   @override
@@ -241,7 +247,7 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
 
     Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => MessageRoomPage( userEmail: userEmail, userName: userName, UID: UID, chatName: chatName, chatRoomID: refDocID)),
+            MaterialPageRoute(builder: (context) => MessageRoomPage( userEmail: userEmail, userName: userName, UID: UID, chatName: chatName, chatRoomID: refDocID, userPhotoUrl: userPhotoUrl,)),
           );
   }
 

@@ -11,20 +11,22 @@ class MessageRoomPage extends StatefulWidget {
   String chatRoomID;
   String userName;
   String chatName;
+  String userPhotoUrl;
 
   MessageRoomPage(
-      {Key key, String UID, String userEmail, String chatRoomID, String userName, String chatName})
+      {Key key, String UID, String userEmail, String chatRoomID, String userName, String chatName, String userPhotoUrl})
       : super(key: key) {
     this.UID = UID;
     this.userEmail = userEmail;
     this.chatRoomID = chatRoomID;
     this.userName = userName;
     this.chatName = chatName;
+    this.userPhotoUrl = userPhotoUrl;
   }
 
   _MessageRoomPageState createState() =>
       _MessageRoomPageState(
-          UID, userEmail, chatRoomID, userName, chatName);
+          UID, userEmail, chatRoomID, userName, chatName, userPhotoUrl);
 }
 
 class _MessageRoomPageState extends State<MessageRoomPage> {
@@ -35,6 +37,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
   String chatRoomID;
   String userName;
   String chatName = "Name";
+  String userPhotoUrl;
 
   ScrollController _controller = ScrollController();
   DocumentSnapshot content;
@@ -51,12 +54,13 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
 
 
   _MessageRoomPageState(String UID, String userEmail, String chatRoomID,
-      String userName, String chatName) {
+      String userName, String chatName, String userPhotoUrl) {
     this.UID = UID;
     this.userEmail = userEmail;
     this.chatRoomID = chatRoomID;
     this.userName = userName;
     this.chatName = chatName;
+    this.userPhotoUrl = userPhotoUrl;
   }
 
   @override
@@ -233,7 +237,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
       }
     }
 
-
+    String photoUrl = document['photoUrl'];
 
 
     //DateTime dateTimemessage = DateTime.fromMicrosecondsSinceEpoch(int.parse(document['date']));
@@ -306,10 +310,23 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
           ), padding:
            EdgeInsets.all(12.0),
         ),
-        Icon(
+        (photoUrl == null) ? Icon(
           Icons.account_circle,
           size: 55.0,
           color: Colors.blue,
+        ) : Container(
+          height: 55,
+          width: 55,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+              color: Colors.blue,
+              image: DecorationImage(
+                  image: new NetworkImage(
+                      photoUrl
+                  ),
+                  fit: BoxFit.fill
+              )
+          ),
         ),
 
 
@@ -388,6 +405,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
         .document(chatRoomID).collection("chatmessages").document();
 
     ref.setData({
+      'photoUrl': userPhotoUrl,
       'nickname': userName,
       'id': UID,
       'email': userEmail,
