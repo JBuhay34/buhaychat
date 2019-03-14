@@ -3,49 +3,45 @@ import 'dart:async';
 import 'package:buhaychat/object/MessageWithPerson.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import "package:intl/intl.dart";
 
 class MessageRoomPage extends StatefulWidget {
   String UID;
-  String friendEmail;
-  String friendName;
   String userEmail;
   String chatRoomID;
   String userName;
-  String friendUID;
+  String chatName;
 
   MessageRoomPage(
-      {Key key, String UID, String friendEmail, String friendName, String userEmail, String chatRoomID, String userName, String friendUID})
+      {Key key, String UID, String userEmail, String chatRoomID, String userName, String chatName})
       : super(key: key) {
     this.UID = UID;
-    this.friendEmail = friendEmail;
-    this.friendName = friendName;
     this.userEmail = userEmail;
     this.chatRoomID = chatRoomID;
     this.userName = userName;
-    this.friendUID = friendUID;
+    this.chatName = chatName;
   }
 
   _MessageRoomPageState createState() =>
       _MessageRoomPageState(
-          UID, friendEmail, friendName, userEmail, chatRoomID, userName, friendUID);
+          UID, userEmail, chatRoomID, userName, chatName);
 }
 
 class _MessageRoomPageState extends State<MessageRoomPage> {
 
 
   String UID;
-  String friendEmail;
   String userEmail;
+  String chatRoomID;
+  String userName;
+  String chatName = "Name";
+
+  ScrollController _controller = ScrollController();
   DocumentSnapshot content;
   MessageWithPerson messageWithPerson;
   FocusNode myFocusNode;
-  String chatRoomID;
-  String userName;
-  String friendUID;
-  ScrollController _controller = ScrollController();
-
   final messageController = TextEditingController();
-  String contactName = "Name";
+
 
   DocumentReference docRef;
 
@@ -54,15 +50,13 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
   Container messageListViewContainer;
 
 
-  _MessageRoomPageState(String contactID, String friendEmail, String friendName,
-      String userEmail, String chatRoomID, String userName, String friendUID) {
-    this.UID = contactID;
-    this.friendEmail = friendEmail;
-    this.contactName = friendName;
+  _MessageRoomPageState(String UID, String userEmail, String chatRoomID,
+      String userName, String chatName) {
+    this.UID = UID;
     this.userEmail = userEmail;
     this.chatRoomID = chatRoomID;
     this.userName = userName;
-    this.friendUID = friendUID;
+    this.chatName = chatName;
   }
 
   @override
@@ -102,6 +96,10 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
                       child: TextField(
                           controller: messageController,
                           focusNode: myFocusNode,
+                          onSubmitted: (String valueChanged) {
+                            if (messageController.text.isNotEmpty)
+                              sendMessage(messageController.text);
+                          },
                           decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: 'Send a message...'
@@ -116,7 +114,8 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
                   IconButton(
                     onPressed: () {
                       String message = messageController.text;
-                      if (message.isNotEmpty || message != null || message == '') {
+                      print("message: $message");
+                      if (message.isNotEmpty) {
 
                         sendMessage(message);
                       }
@@ -134,7 +133,6 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     if(messageController != null) {
       messageController.dispose();
     }
@@ -155,7 +153,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
     Scaffold scaffold = Scaffold(
       appBar: AppBar(
 
-        title: Text(contactName),
+        title: Text(chatName),
       ),
       body: Container(
         child: Column(
@@ -207,6 +205,8 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
 
 
   sendMessage(String message) {
+    var now = new DateTime.now();
+
     DocumentReference ref = Firestore.instance.collection('chats')
         .document(chatRoomID).collection("chatmessages").document();
 
@@ -215,28 +215,30 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
       'id': UID,
       'email': userEmail,
       'message': message,
-      'date': null,
+      'date': now.millisecondsSinceEpoch,
       'sender': userEmail,
       'chat': chatRoomID,
     });
 
+    // We want to update the last message sent on every members chat
+    Firestore.instance.collection('chats')
+        .document(chatRoomID)
+        .collection("members")
+        .snapshots().listen((data) =>
+        data.documents.forEach((doc) {
+          print(doc["title"]);
 
-    DocumentReference ref2 = Firestore.instance.collection('userContacts')
-        .document(UID).collection("contacts").document(friendEmail);
+          DocumentReference ref2 = Firestore.instance.collection('usersChats')
+              .document(doc["id"]).collection("chats").document(chatRoomID);
 
-    ref2.updateData({
-      'message': message,
-      'sender': UID,
-    });
+          ref2.updateData({
+            'message': message,
+            'sender': UID,
+            'date': now.millisecondsSinceEpoch,
+          });
 
-    // updates friends
-    DocumentReference ref3 = Firestore.instance.collection('userContacts')
-        .document(friendUID).collection("contacts").document(userEmail);
+        }));
 
-    ref3.updateData({
-      'message': message,
-      'sender': UID,
-    });
 
     messageController.value = TextEditingValue(text: "");
 
@@ -252,7 +254,21 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
       isYou = true;
     }
 
-    
+    int dateMessage = document['date'];
+
+    String dateString;
+
+
+    if (dateMessage != null || dateMessage == 1) {
+      print("dateMessage: $dateMessage");
+
+      dateString = new DateFormat.yMd().add_jm().format(
+          DateTime.fromMillisecondsSinceEpoch(dateMessage));
+    }
+    //DateTime dateTimemessage = DateTime.fromMicrosecondsSinceEpoch(int.parse(document['date']));
+
+
+
     // this Container has the message
     Container MyMessage = Container(
         padding: EdgeInsets.only(
@@ -262,8 +278,12 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
                 bottom: BorderSide(color: Colors.lightBlue.shade50),
             )
         ),
-        child: Text(
+        child: Column(children: [
+          Text((document['date'] == null) ? "" : dateString),
+          Text(
             (document["message"] == null) ? "None" : document["message"])
+        ]
+        )
     );
 
     return GestureDetector(
@@ -288,6 +308,32 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
       onTap: () {
 
       },
+        onHorizontalDragStart: (DragStartDetails details) {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("Delete Message?"),
+                  content: Text(document["message"]),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("Yes"),
+                      onPressed: () {
+                        Firestore.instance.collection("chats").document(
+                            chatRoomID).collection("chatmessages").document(
+                            document.documentID).delete().then((void hm) {
+                          Navigator.of(context).pop();
+                        });
+                      },
+
+                    )
+                  ],
+                );
+              }
+          );
+        }
+
+
     );
-  }
+  } //
 }

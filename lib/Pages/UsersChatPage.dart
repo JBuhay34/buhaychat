@@ -1,41 +1,49 @@
-import 'package:buhaychat/AddContactPage.dart';
-import 'package:buhaychat/CreateChatRoomPage.dart';
-import 'package:buhaychat/MessageRoomPage.dart';
+import 'package:buhaychat/Pages/AddContactPage.dart';
+import 'package:buhaychat/Pages/CreateChatRoomPage.dart';
+import 'package:buhaychat/Pages/MessageRoomPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import "package:intl/intl.dart";
 
-class MainAppPage extends StatefulWidget {
+
+class UsersChatPage extends StatefulWidget {
   String UID;
-  String email;
+  String userEmail;
   String userName;
+  String userPhoto;
 
-  MainAppPage({Key key, String UID, String email, userName}) : super(key: key){
+
+  UsersChatPage({Key key, String UID, String userEmail, String userName, String userPhoto}) : super(key: key){
 
     this.UID = UID;
-    this.email = email;
+    this.userEmail = userEmail;
     this.userName = userName;
+    this.userPhoto = userPhoto;
   }
 
   @override
-  _MainPageState createState() => _MainPageState(UID, email, userName);
+  _UsersChatPageState createState() => _UsersChatPageState(UID, userEmail, userName, userPhoto);
 }
 
-class _MainPageState extends State<MainAppPage> {
+class _UsersChatPageState extends State<UsersChatPage> {
 
-  String userProfilePic = "";
+  String userPhoto = "";
   String UID;
-  String email;
-  String friendNameClicked;
+  String userEmail;
+  String chatNameClicked;
   String userName;
+  String friendEmail;
+  String chatRoomID;
 
-  _MainPageState(String UID, String email, String userName){
+  _UsersChatPageState(String UID, String userEmail, String userName, String userPhoto){
     this.UID = UID;
-    this.email = email;
+    this.userEmail = userEmail;
     this.userName = userName;
+    this.userPhoto = userPhoto;
   }
 
-
+// Drawer
   Drawer drawer = new Drawer(
       child: new ListView(
         children: <Widget>[
@@ -58,19 +66,18 @@ class _MainPageState extends State<MainAppPage> {
   void initState() {
     super.initState();
 
-
-    firebaseAuth
-        .currentUser()
-        .then((value) async {
-      firebaseUser = value;
-
-      setState(() {
-        userProfilePic = firebaseUser.photoUrl;
-      });
-    });
+//  Just in case I need this for reference
+//    firebaseAuth
+//        .currentUser()
+//        .then((value) async {
+//      firebaseUser = value;
+//
+//
+//    });
 
     }
 
+    //Title appbar
     var text = Text("Messages");
 
   @override
@@ -85,16 +92,17 @@ class _MainPageState extends State<MainAppPage> {
                 onPressed: (){
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AddContactPage(UID: UID)),
+                    MaterialPageRoute(builder: (context) => AddContactPage(UID: UID, userEmail: userEmail)),
                   );
                 }
             )
           ]
       ),
       drawer: drawer,
+      //TODO: We want this streambuilder to grab the users chats and display them.
       body: StreamBuilder(
           stream:
-          Firestore.instance.collection('userContacts').document(UID).collection("contacts").snapshots(),
+          Firestore.instance.collection('usersChats').document(UID).collection("chats").snapshots(),
           builder: (context, snapshot) {
             if(!snapshot.hasData){
               return Text("Loading...");
@@ -112,11 +120,12 @@ class _MainPageState extends State<MainAppPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          // dont implement yet
-//          Navigator.push(
-//            context,
-//            MaterialPageRoute(builder: (context) => CreateChatRoomPage(UID: UID, email: email)),
-//          );
+
+          //TODO: create a chatroompage
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CreateChatRoomPage(UID: UID, userEmail: userEmail, userName: userName)),
+          );
 
         },
         child: Icon(Icons.message),
@@ -124,10 +133,19 @@ class _MainPageState extends State<MainAppPage> {
     );
   }
 
-  String friendEmail;
-  String chatRoomID;
+
 // ListView for the message content
   Widget _getRow(DocumentSnapshot document) {
+
+    int dateMessage = document['date'];
+    String dateString;
+
+
+    if(dateMessage != null || dateMessage == 1 ){
+
+      dateString = new DateFormat.yMd().add_jm().format(DateTime.fromMillisecondsSinceEpoch(dateMessage));
+      print("$dateMessage");
+    }
 
 
     return GestureDetector(
@@ -165,7 +183,7 @@ class _MainPageState extends State<MainAppPage> {
                                     fontSize: 17.0),
                               ),
                               Text(
-                                (document['date'] == null) ? " ": document['date'],
+                                (document['date'] == null||document['date'] == 1) ? " ": dateString,
                                 style: TextStyle(
                                     fontWeight: FontWeight.w400,
                                     color: Colors.black54,
@@ -182,7 +200,7 @@ class _MainPageState extends State<MainAppPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    (document['message'] == null) ? "No messages yet" : document['message'],
+                                    (document['message'] == null || document['message'] == "") ? "No messages yet" : document['message'],
                                     style: TextStyle(
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black54,
@@ -204,19 +222,20 @@ class _MainPageState extends State<MainAppPage> {
           ),
         ),
         onTap: () {
-          friendNameClicked =document['nickname'];
-          friendEmail = document['email'];
-          chatRoomID = document['chat'];
-          chatRoomID = document['chat'];
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MessageRoomPage(friendUID:document['id'],UID: UID, friendEmail: friendEmail, friendName: friendNameClicked, chatRoomID: chatRoomID, userEmail: email, userName: userName)),
-          );
+          //            //TODO: edit MessageRoomPage
 
-          setState(() {
-            // setState, when you want to refresh the ListView(notifyDataSetChanged)
-          }
-          );
+//          chatNameClicked = document['chatName'];
+//          chatRoomID = document['chatID'];
+//          Navigator.push(
+//            context,
+//            MaterialPageRoute(builder: (context) => MessageRoomPage( userEmail: userEmail, userName: userName, UID: UID, chatName: chatNameClicked, chatRoomID: chatRoomID)),
+//          );
+//
+//          setState(() {
+//            // setState, when you want to refresh the ListView(notifyDataSetChanged)
+//          }
+//          );
+
         }
     );
   } // getRow()

@@ -4,23 +4,30 @@ import 'package:flutter/material.dart';
 
 class AddContactPage extends StatefulWidget {
   String UID;
+  String userEmail;
 
-  AddContactPage({Key key, String UID}) : super(key: key) {
+  AddContactPage({Key key, String UID, String userEmail}) : super(key: key) {
     this.UID = UID;
+    this.userEmail = userEmail;
   }
 
   @override
-  _AddContactPageState createState() => _AddContactPageState(UID);
+  _AddContactPageState createState() => _AddContactPageState(UID, userEmail);
 }
 
 class _AddContactPageState extends State<AddContactPage> {
   String UID;
+  String userEmail;
+
   final myController = TextEditingController();
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
-  _AddContactPageState(String UID) {
+  // Constructor
+  _AddContactPageState(String UID, String userEmail) {
     this.UID = UID;
+    this.userEmail = userEmail;
   }
+
 
   @override
   void initState() {
@@ -35,6 +42,7 @@ class _AddContactPageState extends State<AddContactPage> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,23 +55,29 @@ class _AddContactPageState extends State<AddContactPage> {
                 decoration: InputDecoration(
                     labelText: 'Enter the email you would like to add'),
               ))),
+
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              //Add and check if contact exists in firebase. And check if they're not already a contact
-              addContact(myController.text);
+
+              addContact(myController.text.toLowerCase());
+
             },
           )
         ]));
   }
 
+  //TODO: Add and check if contact exists in Firebase. And check if they're not already a contact
   addContact(String emailEntered) {
     FirebaseUser firebaseUser;
+
     if(emailEntered != "" || emailEntered == null){
+
       firebaseAuth.currentUser().then((value) async {
         firebaseUser = value;
 
         if (firebaseUser != null) {
+
           // Check if email is in users folder of firebase
           final QuerySnapshot result = await Firestore.instance
               .collection('users')
@@ -73,64 +87,60 @@ class _AddContactPageState extends State<AddContactPage> {
           final List<DocumentSnapshot> documents = result.documents;
 
           // if there is a user with that email add to userContacts/$UID/contacts
-          if (documents.length != 0) {
-            // Update data to server if new user
-            String chatRoomID = "";
-            List<String> array = List<String>();
-            array.add(emailEntered);
-            array.add(firebaseUser.email);
-            array.sort();
-            for(String i in array){
-              chatRoomID += i;
-            }
-            print("chatRoomID"+chatRoomID);
-            String id;
-            String nickname;
+          if (documents.length == 1) {
+
+            String friendNickname;
+            String friendID;
+            String friendEmail;
+            String friendPhotoURL;
+
             for (DocumentSnapshot snapshot in documents) {
-              nickname = snapshot['name'];
-              id = snapshot['id'];
-              nickname = snapshot['nickname'];
+              friendNickname = snapshot['nickname'];
+              friendID = snapshot['id'];
+              friendEmail = snapshot['email'];
+              friendPhotoURL = snapshot['photoUrl'];
+
             }
 
+            // create an instance for the userscontacts
             Firestore.instance
                 .collection('userContacts')
                 .document(UID).setData({'nickname': firebaseUser.displayName});
 
+
+            // add to current users contacts
             DocumentReference ref = Firestore.instance
-                .collection('userContacts')
+                .collection("userContacts")
                 .document(UID)
                 .collection("contacts")
-                .document(emailEntered);
+                .document(friendID);
             ref.setData({
-              'nickname': nickname,
-              'id': id,
-              'email': emailEntered,
-              'message': "",
-              'date': "",
-              'sender': "",
-              'chat': chatRoomID,
+              'nickname': friendNickname,
+              'id': friendID,
+              'email': friendEmail,
+              'photoUrl': friendPhotoURL
             });
+            
 
+            // Add to the other users contacts
             DocumentReference ref2 = Firestore.instance
-                .collection('userContacts')
-                .document(id)
+                .collection("userContacts")
+                .document(friendID)
                 .collection("contacts")
-                .document(firebaseUser.email);
+                .document(UID);
             ref2.setData({
               'nickname': firebaseUser.displayName,
               'id': firebaseUser.uid,
               'email': firebaseUser.email,
-              'message': "",
-              'date': "",
-              'sender': "",
-              'chat': chatRoomID,
+              'photoUrl': firebaseUser.photoUrl
             });
             
-            DocumentReference ref3 = Firestore.instance.collection("chats").document(chatRoomID);
-            ref3.setData({
-              "numOfMembers": array.length,
-              "name": "Whats up"
-            });
+//            DocumentReference ref3 = Firestore.instance.collection("chats").document();
+//            ref3.updateData({
+//              "numOfMembers": array.length,
+//              "name": "Whats up"
+//            });
+
             showDialog(
                 context: context,
                 builder:(BuildContext context){
