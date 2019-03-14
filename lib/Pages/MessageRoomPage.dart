@@ -215,15 +215,27 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
     String message = document["message"];
 
     int dateMessage = document['date'];
-
+    DateTime now = DateTime.now();
     String dateString;
 
-
+    // Check if the message is from today, just show the time
     if (dateMessage != null || dateMessage == 1) {
+      DateTime checks = DateTime.fromMillisecondsSinceEpoch(dateMessage);
 
-      dateString = new DateFormat.yMd().add_jm().format(
-          DateTime.fromMillisecondsSinceEpoch(dateMessage));
+      if(checks.day == now.day){
+        dateString = new DateFormat.jm().format(
+            checks
+        );
+      } else{
+        dateString = new DateFormat.yMd().add_jm().format(
+            checks
+        );
+      }
     }
+
+
+
+
     //DateTime dateTimemessage = DateTime.fromMicrosecondsSinceEpoch(int.parse(document['date']));
 
 
@@ -240,13 +252,20 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
       bottomRight: Radius.circular(10.0),
     );
     // this Container has the message
-    Column MyMessage = Column(
+    Container MyMessage = Container(
+      padding: EdgeInsets.all(8.0),
+        child:Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: align,
             children: <Widget>[
-              Text((document['date'] == null) ? "" : dateString),
+              Text((document['date'] == null) ? "" : dateString,
+            style: TextStyle(
+              color: Colors.black.withOpacity(0.6),
+              fontFamily: 'Roboto'
+            ),
+          ),
             ],
           ),
 
@@ -257,23 +276,19 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
                   constraints: BoxConstraints(maxWidth: 300),
                     child:Text(
                       (message == null) ? "None" : message,
-                      overflow: TextOverflow.ellipsis,
                 )
                 )
               ],
             ),
 
 
-
-
-
-
         ]
-    );
+    ));
 
     Row mainChild = (isYou) ? Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: align,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
           child: Container(
@@ -288,7 +303,8 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
               color: bg,
               borderRadius: radius,
             ),
-          ), padding: EdgeInsets.all(12.0),
+          ), padding:
+           EdgeInsets.all(12.0),
         ),
         Icon(
           Icons.account_circle,

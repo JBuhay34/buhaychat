@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:buhaychat/Pages/MessageRoomPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,8 @@ class CreateChatRoomPage extends StatefulWidget {
 class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
 
   List<String> membersForGroupChat = List<String>();
+  // Key: memberID, Value: memberName, memberPhotoUrl
+  //HashMap<String, List<String>> memberHashMap = HashMap<String, List<String>>();
 
   String UID;
   String userEmail;
@@ -87,6 +91,7 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
     String friendName = document['nickname'];
     String friendID = document['id'];
     String friendEmail = document['email'];
+    String friendPhotoUrl = document['photoUrl'];
 
     BoxDecoration boxDecor = BoxDecoration(
         border: Border(
@@ -162,9 +167,17 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
         //TODO: When a contact is clicked we want to add them to the groupchat, if clicked again and is in list, remove
         if (membersForGroupChat.contains(friendID)) {
           membersForGroupChat.remove(friendID);
+          //memberHashMap.remove(friendID);
           setState(() {});
         } else {
+
+//          List<String> friendNamePhotoUrl = new List<String>();
+//          friendNamePhotoUrl.add(friendName);
+//          friendNamePhotoUrl.add(friendPhotoUrl);
+
           membersForGroupChat.add(friendID);
+          //memberHashMap.putIfAbsent(friendID, membersForGroupChat);
+
           setState(() {});
         }
         for (String mem in membersForGroupChat) {
@@ -185,6 +198,8 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
     DocumentReference ref = Firestore.instance
         .collection("chats")
         .document();
+
+    //TODO: want to add the photoURL of every mems UID
 
 
     String refDocID = ref.documentID;
@@ -209,6 +224,7 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
 
     // we add to the usersChats/chats for each member
     for (String mem in membersForGroupChat) {
+
       ref.collection("members").document(mem).setData({
         "id": mem
       });
