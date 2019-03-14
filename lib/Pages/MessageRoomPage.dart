@@ -336,11 +336,24 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: align,
       children: <Widget>[
-      Icon(
+        (photoUrl == null) ? Icon(
       Icons.account_circle,
       size: 55.0,
       color: Colors.blue,
-    ),
+        ) : Container(
+          height: 55,
+          width: 55,
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.blue,
+              image: DecorationImage(
+                  image: new NetworkImage(
+                      photoUrl
+                  ),
+                  fit: BoxFit.fill
+              )
+          ),
+        ),
         Padding(
           child: Container(
             child: MyMessage,
