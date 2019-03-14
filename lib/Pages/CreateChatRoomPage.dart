@@ -194,6 +194,19 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
       'chatName': chatName,
     });
 
+    // Add yourself to the groupchat
+    ref.collection("members").document(UID).setData({
+      "id": UID
+    });
+
+    Firestore.instance
+        .collection("usersChats")
+        .document(UID).collection("chats").document(refDocID).setData({
+      "numMembersInChat": membersForGroupChat.length,
+      'chatID': refDocID,
+      'chatName': chatName
+    });
+
     // we add to the usersChats/chats for each member
     for (String mem in membersForGroupChat) {
       ref.collection("members").document(mem).setData({

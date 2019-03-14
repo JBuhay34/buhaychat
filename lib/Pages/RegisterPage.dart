@@ -77,7 +77,7 @@ class RegisterPageState extends State<RegisterPage> {
 
     super.initState();
 
-    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    firebaseAuth = FirebaseAuth.instance;
 
      //Uses an asynctask to retrieve the firebaseUser
 //    firebaseAuth.currentUser().then((value) async {

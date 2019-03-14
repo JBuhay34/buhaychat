@@ -94,6 +94,8 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
                 children: <Widget>[
                   Expanded(
                       child: TextField(
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
                           controller: messageController,
                           focusNode: myFocusNode,
                           onSubmitted: (String valueChanged) {
@@ -203,6 +205,165 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
 
   }
 
+  // ListView for the message content
+  Widget _getMessages(DocumentSnapshot document, int position, int length) {
+    bool isYou = false;
+    if (document["sender"] == userEmail) {
+      isYou = true;
+    }
+
+    String message = document["message"];
+
+    int dateMessage = document['date'];
+
+    String dateString;
+
+
+    if (dateMessage != null || dateMessage == 1) {
+
+      dateString = new DateFormat.yMd().add_jm().format(
+          DateTime.fromMillisecondsSinceEpoch(dateMessage));
+    }
+    //DateTime dateTimemessage = DateTime.fromMicrosecondsSinceEpoch(int.parse(document['date']));
+
+
+    final bg = isYou ? Colors.blue.shade200 : Colors.greenAccent.shade100;
+    final align = isYou ? MainAxisAlignment.end : MainAxisAlignment.start;
+    final radius = (!isYou) ? BorderRadius.only(
+      topRight: Radius.circular(5.0),
+      bottomLeft: Radius.circular(10.0),
+      bottomRight: Radius.circular(5.0),
+    )
+        : BorderRadius.only(
+      topLeft: Radius.circular(5.0),
+      bottomLeft: Radius.circular(5.0),
+      bottomRight: Radius.circular(10.0),
+    );
+    // this Container has the message
+    Column MyMessage = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: align,
+            children: <Widget>[
+              Text((document['date'] == null) ? "" : dateString),
+            ],
+          ),
+
+
+            Row(
+              children: <Widget>[
+                Container(
+                  constraints: BoxConstraints(maxWidth: 300),
+                    child:Text(
+                      (message == null) ? "None" : message,
+                      overflow: TextOverflow.ellipsis,
+                )
+                )
+              ],
+            ),
+
+
+
+
+
+
+        ]
+    );
+
+    Row mainChild = (isYou) ? Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: align,
+      children: <Widget>[
+        Padding(
+          child: Container(
+            child: MyMessage,
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                    blurRadius: .5,
+                    spreadRadius: 1.0,
+                    color: Colors.black.withOpacity(.12))
+              ],
+              color: bg,
+              borderRadius: radius,
+            ),
+          ), padding: EdgeInsets.all(12.0),
+        ),
+        Icon(
+          Icons.account_circle,
+          size: 55.0,
+          color: Colors.blue,
+        ),
+
+
+      ],
+
+    ) : Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: align,
+      children: <Widget>[
+      Icon(
+      Icons.account_circle,
+      size: 55.0,
+      color: Colors.blue,
+    ),
+        Padding(
+          child: Container(
+            child: MyMessage,
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                    blurRadius: .5,
+                    spreadRadius: 1.0,
+                    color: Colors.black.withOpacity(.12))
+              ],
+              color: bg,
+              borderRadius: radius,
+            ),
+          ), padding: EdgeInsets.all(12.0),
+        ),
+
+
+      ],
+
+    );
+
+    return GestureDetector(
+
+        child: mainChild,
+      onTap: () {
+
+      },
+        onHorizontalDragStart: (DragStartDetails details) {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("Delete Message?"),
+                  content: Text(document["message"]),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("Yes"),
+                      onPressed: () {
+                        Firestore.instance.collection("chats").document(
+                            chatRoomID).collection("chatmessages").document(
+                            document.documentID).delete().then((void hm) {
+                          Navigator.of(context).pop();
+                        });
+                      },
+
+                    )
+                  ],
+                );
+              }
+          );
+        }
+
+
+    );
+  } // end _get_Messages
+
 
   sendMessage(String message) {
     var now = new DateTime.now();
@@ -236,7 +397,6 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
             'sender': UID,
             'date': now.millisecondsSinceEpoch,
           });
-
         }));
 
 
@@ -244,96 +404,5 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
 
     _controller.animateTo(_controller.position.maxScrollExtent,
         duration: const Duration(microseconds: 300), curve: Curves.easeOut);
-  }
-
-
-  // ListView for the message content
-  Widget _getMessages(DocumentSnapshot document, int position, int length) {
-    bool isYou = false;
-    if (document["sender"] == userEmail) {
-      isYou = true;
-    }
-
-    int dateMessage = document['date'];
-
-    String dateString;
-
-
-    if (dateMessage != null || dateMessage == 1) {
-      print("dateMessage: $dateMessage");
-
-      dateString = new DateFormat.yMd().add_jm().format(
-          DateTime.fromMillisecondsSinceEpoch(dateMessage));
-    }
-    //DateTime dateTimemessage = DateTime.fromMicrosecondsSinceEpoch(int.parse(document['date']));
-
-
-
-    // this Container has the message
-    Container MyMessage = Container(
-        padding: EdgeInsets.only(
-            left: 14.0, right: 14.0, top: 5.0, bottom: 10.0),
-        decoration: BoxDecoration(
-            border: Border(
-                bottom: BorderSide(color: Colors.lightBlue.shade50),
-            )
-        ),
-        child: Column(children: [
-          Text((document['date'] == null) ? "" : dateString),
-          Text(
-            (document["message"] == null) ? "None" : document["message"])
-        ]
-        )
-    );
-
-    return GestureDetector(
-      child: (
-      // Is it you ? that sent the message.
-
-
-          isYou ? Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              MyMessage
-            ],
-          ) : Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              MyMessage
-            ],
-
-          )),
-
-
-      onTap: () {
-
-      },
-        onHorizontalDragStart: (DragStartDetails details) {
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text("Delete Message?"),
-                  content: Text(document["message"]),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text("Yes"),
-                      onPressed: () {
-                        Firestore.instance.collection("chats").document(
-                            chatRoomID).collection("chatmessages").document(
-                            document.documentID).delete().then((void hm) {
-                          Navigator.of(context).pop();
-                        });
-                      },
-
-                    )
-                  ],
-                );
-              }
-          );
-        }
-
-
-    );
-  } //
+  } // end sendMessage
 }

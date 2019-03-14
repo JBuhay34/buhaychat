@@ -139,13 +139,76 @@ class _UsersChatPageState extends State<UsersChatPage> {
 
     int dateMessage = document['date'];
     String dateString;
-
-
+    String chatName = document['chatName'];
+    String message = document['message'];
+    if(message != null){
+      if(message.length > 20){
+        message = message.substring(0,20);
+      }
+    }
     if(dateMessage != null || dateMessage == 1 ){
 
       dateString = new DateFormat.yMd().add_jm().format(DateTime.fromMillisecondsSinceEpoch(dateMessage));
       print("$dateMessage");
     }
+
+
+    Expanded childWidget = Expanded(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 10.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(
+                  constraints: BoxConstraints(maxWidth: 200),
+                    child: Text(
+                      (chatName == null) ? " ": chatName,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black87,
+                          fontSize: 17.0),
+                    )
+                ),
+                Container(
+                  constraints: BoxConstraints(maxWidth: 100),
+                    child:Text(
+                  (dateMessage == null ||dateMessage == 1) ? " ": dateString,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black54,
+                      fontSize: 13.5
+                  ),
+                ))
+              ],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      (message == null || message == "") ? "No messages yet" : message,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black54,
+                          fontSize: 15.5),
+                    ),
+                  ],
+                ),
+                Icon(Icons.check)
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+
+
+
 
 
     return GestureDetector(
@@ -167,54 +230,7 @@ class _UsersChatPageState extends State<UsersChatPage> {
                     size: 55.0,
                     color: Colors.blue,
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                (document['nickname'] == null) ? " ": document['nickname'],
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.black87,
-                                    fontSize: 17.0),
-                              ),
-                              Text(
-                                (document['date'] == null||document['date'] == 1) ? " ": dateString,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.black54,
-                                    fontSize: 13.5
-                                ),
-                              )
-                            ],
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    (document['message'] == null || document['message'] == "") ? "No messages yet" : document['message'],
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black54,
-                                        fontSize: 15.5),
-                                  ),
-                                ],
-                              ),
-                              Icon(Icons.check)
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  childWidget
                 ],
               ),
             ),
@@ -222,19 +238,19 @@ class _UsersChatPageState extends State<UsersChatPage> {
           ),
         ),
         onTap: () {
-          //            //TODO: edit MessageRoomPage
+         //TODO: edit MessageRoomPage
 
-//          chatNameClicked = document['chatName'];
-//          chatRoomID = document['chatID'];
-//          Navigator.push(
-//            context,
-//            MaterialPageRoute(builder: (context) => MessageRoomPage( userEmail: userEmail, userName: userName, UID: UID, chatName: chatNameClicked, chatRoomID: chatRoomID)),
-//          );
-//
-//          setState(() {
-//            // setState, when you want to refresh the ListView(notifyDataSetChanged)
-//          }
-//          );
+          chatNameClicked = document['chatName'];
+          chatRoomID = document['chatID'];
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MessageRoomPage( userEmail: userEmail, userName: userName, UID: UID, chatName: chatNameClicked, chatRoomID: chatRoomID)),
+          );
+
+          setState(() {
+            // setState, when you want to refresh the ListView(notifyDataSetChanged)
+          }
+          );
 
         }
     );
