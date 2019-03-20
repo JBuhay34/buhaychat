@@ -28,6 +28,8 @@ class UsersChatPage extends StatefulWidget {
 
 class _UsersChatPageState extends State<UsersChatPage> {
 
+
+
   String userPhoto = "";
   String UID;
   String userEmail;
@@ -66,6 +68,11 @@ class _UsersChatPageState extends State<UsersChatPage> {
   void initState() {
     super.initState();
 
+
+
+
+
+
 //  Just in case I need this for reference
 //    firebaseAuth
 //        .currentUser()
@@ -76,6 +83,7 @@ class _UsersChatPageState extends State<UsersChatPage> {
 //    });
 
     }
+
 
     //Title appbar
     var text = Text("Messages");
@@ -102,7 +110,7 @@ class _UsersChatPageState extends State<UsersChatPage> {
       //TODO: We want this streambuilder to grab the users chats and display them.
       body: StreamBuilder(
           stream:
-          Firestore.instance.collection('usersChats').document(UID).collection("chats").snapshots(),
+          Firestore.instance.collection('usersChats').document(UID).collection("chats").orderBy("date", descending: true).snapshots(),
           builder: (context, snapshot) {
             if(!snapshot.hasData){
               return Text("Loading...");
@@ -151,6 +159,8 @@ class _UsersChatPageState extends State<UsersChatPage> {
       dateString = new DateFormat.yMd().add_jm().format(DateTime.fromMillisecondsSinceEpoch(dateMessage));
       //print("$dateMessage");
     }
+
+    String photoUrl = document['photoUrl'];
 
 
     Expanded childWidget = Expanded(
@@ -222,10 +232,23 @@ class _UsersChatPageState extends State<UsersChatPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Icon(
+                  (photoUrl == null) ? Icon(
                     Icons.account_circle,
                     size: 55.0,
                     color: Colors.blue,
+                  ) : Container(
+                    height: 55,
+                    width: 55,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.blue,
+                        image: DecorationImage(
+                            image: new NetworkImage(
+                                photoUrl
+                            ),
+                            fit: BoxFit.fill
+                        )
+                    ),
                   ),
                   childWidget
                 ],

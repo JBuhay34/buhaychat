@@ -443,8 +443,10 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
             'message': message,
             'sender': UID,
             'date': now.millisecondsSinceEpoch,
+            'photoUrl': userPhotoUrl,
           });
         }));
+
 
 
     messageController.value = TextEditingValue(text: "");

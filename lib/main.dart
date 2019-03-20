@@ -1,9 +1,6 @@
-import 'package:buhaychat/Pages/AddContactPage.dart';
-import 'package:buhaychat/Pages/UsersChatPage.dart';
-import 'package:buhaychat/Pages/MessageRoomPage.dart';
-import 'package:buhaychat/Pages/RegisterPage.dart';
 import 'package:buhaychat/Pages/SplashPage.dart';
 import 'package:flutter/material.dart';
+
 
 
 

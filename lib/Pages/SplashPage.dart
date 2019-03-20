@@ -3,6 +3,7 @@ import 'package:buhaychat/Pages/RegisterPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class SplashPage extends StatefulWidget {
   SplashPage({Key key}) : super(key: key);
@@ -12,6 +13,8 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   @override
@@ -21,6 +24,20 @@ class _SplashPageState extends State<SplashPage> {
     firebaseAuth.currentUser().then((value) async {
       FirebaseUser firebaseUser = value;
       if (firebaseUser != null) {
+
+        _firebaseMessaging.requestNotificationPermissions();
+        _firebaseMessaging.configure();
+
+        DocumentReference ref = Firestore.instance.collection('users')
+            .document(firebaseUser.uid);
+
+        _firebaseMessaging.getToken().then((onValue) async{
+          print("deviceToken: " + onValue);
+          ref.updateData({
+            'deviceToken': onValue,
+          });
+        }
+        );
 
 
         //Uses an asynctask to retrieve the firebaseUser
