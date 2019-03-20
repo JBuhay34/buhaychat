@@ -277,7 +277,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
             Row(
               children: <Widget>[
                 Container(
-                  constraints: BoxConstraints(maxWidth: 300),
+                  constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width-200),
                     child:Text(
                       (message == null) ? "None" : message,
                 )

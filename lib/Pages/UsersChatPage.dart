@@ -208,9 +208,6 @@ class _UsersChatPageState extends State<UsersChatPage> {
     );
 
 
-
-
-
     return GestureDetector(
         child: Container(
           decoration: BoxDecoration(
@@ -252,9 +249,56 @@ class _UsersChatPageState extends State<UsersChatPage> {
           }
           );
 
-        }
+        },
+
+        onLongPress: (){
+          chatNameClicked = document['chatName'];
+          chatRoomID = document['chatID'];
+          deleteChat(chatRoomID, chatNameClicked);
+          setState(() {
+            // setState, when you want to refresh the ListView(notifyDataSetChanged)
+          }
+          );
+    },
     );
   } // getRow()
+
+
+  void deleteChat(String chatRoomID, chatRoomName){
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Delete Chat?"),
+            content: Text(chatRoomName),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Yes"),
+                onPressed: () {
+
+                  // Removes from the usersChats
+                  Firestore.instance.collection("usersChats").document(
+                      UID).collection("chats").document(chatRoomID).delete().then((void hm) {
+                        // need only once
+                    Navigator.of(context).pop();
+                  });
+
+                  // Removes from the members of the chat
+                  Firestore.instance.collection("chats").document(
+                      chatRoomID).collection("members").document(UID).delete().then((void hm) {
+                  });
+
+                },
+
+              )
+            ],
+          );
+        }
+    );
+  }
+
+
+
 } // _MainPageState
 
 

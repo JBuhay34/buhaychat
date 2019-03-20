@@ -84,7 +84,18 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
         label: const Text('Chat'),
         onPressed: () {
 
-          createGroupChat(myController.text);
+          if(myController.text.isNotEmpty && membersForGroupChat.length != 0){
+            createGroupChat(myController.text);
+          } else{
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Need a Chat Name and Members"),
+                  );
+                }
+            );
+          }
 
         }
 ,
