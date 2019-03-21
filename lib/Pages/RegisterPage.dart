@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:buhaychat/AppColors.dart';
 
 class RegisterPage extends StatefulWidget {
   RegisterPage({Key key}) : super(key: key);
@@ -90,7 +91,6 @@ class RegisterPageState extends State<RegisterPage> {
 
 
 
-
   @override
   Widget build(BuildContext context) {
 
@@ -110,11 +110,19 @@ class RegisterPageState extends State<RegisterPage> {
 
 
     return Scaffold(
-        appBar: AppBar(title: Text("Register"),automaticallyImplyLeading: false),
-        body: Center(
-            child: Column(children: [
+        appBar: AppBar(title: Text("Register",),automaticallyImplyLeading: false, backgroundColor: AppColors.primaryColor,),
+        body: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: AppColors.backgroundColor,
+            child: Center(
+            child: Column(mainAxisAlignment: MainAxisAlignment.center,
+                children: [
               loginWithGoogleButton,
-        ])));
+            ])
+            )
+        )
+    );
     ;
   }
 }

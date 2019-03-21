@@ -4,6 +4,7 @@ import 'package:buhaychat/object/MessageWithPerson.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import "package:intl/intl.dart";
+import 'package:buhaychat/AppColors.dart';
 
 class MessageRoomPage extends StatefulWidget {
   String UID;
@@ -98,6 +99,9 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
                 children: <Widget>[
                   Expanded(
                       child: TextField(
+                        cursorColor: AppColors.textColor,
+                          autocorrect: true,
+                          style: TextStyle(color: AppColors.textColor),
                           maxLines: null,
                           keyboardType: TextInputType.multiline,
                           controller: messageController,
@@ -108,13 +112,14 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
                           },
                           decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: 'Send a message...'
+                              hintText: 'Send a message...',
+                            hintStyle: TextStyle(color:Colors.grey),
                           )
                       )
                   ),
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(Icons.album),
+                    icon: Icon(Icons.album,color: AppColors.accentColor,),
                     iconSize: 40,
                   ),
                   IconButton(
@@ -127,7 +132,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
                       }
 
                     },
-                    icon: Icon(Icons.send),
+                    icon: Icon(Icons.send, color: AppColors.accentColor),
                     iconSize: 40,
                   )
                 ],
@@ -158,10 +163,11 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
     // TODO: implement build
     Scaffold scaffold = Scaffold(
       appBar: AppBar(
-
+        backgroundColor: AppColors.primaryColor,
         title: Text(chatName),
       ),
       body: Container(
+        color: AppColors.backgroundColor,
         child: Column(
             children: <Widget>[
               StreamBuilder(
@@ -243,7 +249,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
     //DateTime dateTimemessage = DateTime.fromMicrosecondsSinceEpoch(int.parse(document['date']));
 
 
-    final bg = isYou ? Colors.blue.shade200 : Colors.greenAccent.shade100;
+    final bg = isYou ? AppColors.primaryColor : AppColors.bubbleThem;
     final align = isYou ? MainAxisAlignment.end : MainAxisAlignment.start;
     final radius = (!isYou) ? BorderRadius.only(
       topRight: Radius.circular(5.0),
@@ -266,7 +272,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
             children: <Widget>[
               Text((document['date'] == null) ? "" : dateString,
             style: TextStyle(
-              color: Colors.black.withOpacity(0.6),
+              color: AppColors.textColor,
               fontFamily: 'Roboto'
             ),
           ),
@@ -280,6 +286,10 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
                   constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width-200),
                     child:Text(
                       (message == null) ? "None" : message,
+                      style: TextStyle(
+                          color: AppColors.textColor,
+                          fontFamily: 'Roboto'
+                      ),
                 )
                 )
               ],
@@ -442,6 +452,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
           ref2.updateData({
             'message': message,
             'sender': UID,
+            'senderName': userName,
             'date': now.millisecondsSinceEpoch,
             'photoUrl': userPhotoUrl,
           });

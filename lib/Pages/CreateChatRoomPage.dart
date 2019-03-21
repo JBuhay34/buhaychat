@@ -1,5 +1,4 @@
-import 'dart:collection';
-
+import 'package:buhaychat/AppColors.dart';
 import 'package:buhaychat/Pages/MessageRoomPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -46,13 +45,26 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      appBar: AppBar(),
-      body: Column(
+      appBar: AppBar(backgroundColor: AppColors.primaryColor,),
+      body: Container(
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
+          height: MediaQuery
+              .of(context)
+              .size
+              .height,
+          color: AppColors.backgroundColor,
+          child: Column(
           children: [
             TextFormField(
+              cursorColor: AppColors.textColor,
+              autocorrect: true,
+              style: TextStyle(color: AppColors.textColor),
                   controller: myController,
                   decoration: InputDecoration(
-                      labelText: 'Chat Room Name'),
+                      labelText: 'Chat Room Name',),
                 )
 
             ,
@@ -77,13 +89,14 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
             )
             ),
           ]
+          )
       ),
       floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: AppColors.accentColor,
         elevation: 4.0,
         icon: const Icon(Icons.create),
         label: const Text('Chat'),
         onPressed: () {
-
           if(myController.text.isNotEmpty && membersForGroupChat.length != 0){
             createGroupChat(myController.text);
           } else{
@@ -96,7 +109,6 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
                 }
             );
           }
-
         }
 ,
       ),
@@ -142,10 +154,12 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
+
                               (friendName == null) ? " " : friendName,
                               style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black87,
+                                fontFamily: 'Roboto',
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textColor,
                                   fontSize: 17.0),
                             ),
                           ],
@@ -162,8 +176,9 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
                                       ? ""
                                       : friendEmail,
                                   style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.black54,
+                                      fontFamily: 'Roboto',
+                                      fontWeight: FontWeight.normal,
+                                      color: AppColors.textColor,
                                       fontSize: 15.5),
                                 ),
                               ],
