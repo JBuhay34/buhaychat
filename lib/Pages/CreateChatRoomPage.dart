@@ -140,10 +140,23 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Icon(
+                (friendPhotoUrl == null) ? Icon(
                   Icons.account_circle,
                   size: 55.0,
                   color: Colors.blue,
+                ) : Container(
+                  height: 55,
+                  width: 55,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blue,
+                      image: DecorationImage(
+                          image: new NetworkImage(
+                              friendPhotoUrl
+                          ),
+                          fit: BoxFit.fill
+                      )
+                  ),
                 ),
                 Expanded(
                   child: Padding(

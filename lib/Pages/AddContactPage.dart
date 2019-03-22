@@ -1,3 +1,4 @@
+import 'package:buhaychat/AppColors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -46,25 +47,38 @@ class _AddContactPageState extends State<AddContactPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Add Friend")),
-        body: Column(children: [
-          (Padding(
-              padding: const EdgeInsets.all(25.0),
-              child: TextFormField(
-                controller: myController,
-                decoration: InputDecoration(
-                    labelText: 'Enter the email you would like to add'),
-              ))),
+        appBar: AppBar(
+          title: Text("Add Friend"), backgroundColor: AppColors.primaryColor,),
+        body: Container(
+            width: MediaQuery
+                .of(context)
+                .size
+                .width,
+            height: MediaQuery
+                .of(context)
+                .size
+                .height,
+            color: AppColors.backgroundColor,
+            child: Column(children: [
+              (Padding(
+                  padding: const EdgeInsets.all(25.0),
+                  child: TextFormField(
+                    controller: myController,
+                    decoration: InputDecoration(
+                        labelText: 'Enter the email you would like to add'),
+                  ))),
+            ])
 
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-
-              addContact(myController.text.toLowerCase());
-
-            },
-          )
-        ]));
+        ),
+      floatingActionButton: FloatingActionButton(
+        elevation: 3,
+        backgroundColor: AppColors.accentColor,
+        onPressed: (){
+          addContact(myController.text.toLowerCase());
+        },
+        child: Icon(Icons.person_add),
+      ),
+    );
   }
 
   //TODO: Add and check if contact exists in Firebase. And check if they're not already a contact
@@ -72,12 +86,10 @@ class _AddContactPageState extends State<AddContactPage> {
     FirebaseUser firebaseUser;
 
     if(emailEntered != "" || emailEntered == null){
-
       firebaseAuth.currentUser().then((value) async {
         firebaseUser = value;
 
         if (firebaseUser != null) {
-
           // Check if email is in users folder of firebase
           final QuerySnapshot result = await Firestore.instance
               .collection('users')
@@ -88,7 +100,6 @@ class _AddContactPageState extends State<AddContactPage> {
 
           // if there is a user with that email add to userContacts/$UID/contacts
           if (documents.length == 1) {
-
             String friendNickname;
             String friendID;
             String friendEmail;
@@ -99,7 +110,6 @@ class _AddContactPageState extends State<AddContactPage> {
               friendID = snapshot['id'];
               friendEmail = snapshot['email'];
               friendPhotoURL = snapshot['photoUrl'];
-
             }
 
             // create an instance for the userscontacts
@@ -120,7 +130,7 @@ class _AddContactPageState extends State<AddContactPage> {
               'email': friendEmail,
               'photoUrl': friendPhotoURL
             });
-            
+
 
             // Add to the other users contacts
             DocumentReference ref2 = Firestore.instance
@@ -134,7 +144,7 @@ class _AddContactPageState extends State<AddContactPage> {
               'email': firebaseUser.email,
               'photoUrl': firebaseUser.photoUrl
             });
-            
+
 //            DocumentReference ref3 = Firestore.instance.collection("chats").document();
 //            ref3.updateData({
 //              "numOfMembers": array.length,
@@ -151,18 +161,16 @@ class _AddContactPageState extends State<AddContactPage> {
                   );
                 }
             );
-
           } else{
-
             showDialog(
-              context: context,
-              builder:(BuildContext context){
-                return AlertDialog(
-                // Retrieve the text the user has typed in using our
-                // TextEditingController
-                title: Text("There is no user with that name"),
-              );
-              }
+                context: context,
+                builder:(BuildContext context){
+                  return AlertDialog(
+                    // Retrieve the text the user has typed in using our
+                    // TextEditingController
+                    title: Text("There is no user with that name"),
+                  );
+                }
             );
 
             print("No user");
@@ -175,8 +183,6 @@ class _AddContactPageState extends State<AddContactPage> {
 //        );
         }
       });
-
     }
-
   }
 }

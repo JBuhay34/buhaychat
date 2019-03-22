@@ -5,6 +5,7 @@ import 'package:buhaychat/object/MessageWithPerson.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import "package:intl/intl.dart";
 import 'package:buhaychat/AppColors.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -412,29 +413,32 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
       onTap: () {
 
       },
-        onHorizontalDragStart: (DragStartDetails details) {
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text("Delete Message?"),
-                  content: Text(document["message"]),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text("Yes"),
-                      onPressed: () {
-                        Firestore.instance.collection("chats").document(
-                            chatRoomID).collection("chatmessages").document(
-                            document.documentID).delete().then((void hm) {
-                          Navigator.of(context).pop();
-                        });
-                      },
+        onLongPress: () async {
+          if(isYou){
+            await SystemChannels.platform.invokeMethod<void>('HapticFeedback.vibrate');
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Delete Message?"),
+                    content: Text(document["message"]),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text("Yes"),
+                        onPressed: () {
+                          Firestore.instance.collection("chats").document(
+                              chatRoomID).collection("chatmessages").document(
+                              document.documentID).delete().then((void hm) {
+                            Navigator.of(context).pop();
+                          });
+                        },
 
-                    )
-                  ],
-                );
-              }
-          );
+                      )
+                    ],
+                  );
+                }
+            );
+          }
         }
 
 

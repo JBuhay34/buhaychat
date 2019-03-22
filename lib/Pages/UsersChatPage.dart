@@ -6,6 +6,7 @@ import 'package:buhaychat/Pages/RegisterPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import "package:intl/intl.dart";
 
 
@@ -191,9 +192,20 @@ class _UsersChatPageState extends State<UsersChatPage> {
         message = message.substring(0,20);
       }
     }
-    if(dateMessage != null || dateMessage == 1 ){
-      dateString = new DateFormat.yMd().add_jm().format(DateTime.fromMillisecondsSinceEpoch(dateMessage));
-      //print("$dateMessage");
+    // Check if the message is from today, just show the time
+    DateTime now = DateTime.now();
+    if (dateMessage != null || dateMessage == 1) {
+      DateTime checks = DateTime.fromMillisecondsSinceEpoch(dateMessage);
+
+      if(checks.day == now.day){
+        dateString = new DateFormat.jm().format(
+            checks
+        );
+      } else{
+        dateString = new DateFormat.yMd().add_jm().format(
+            checks
+        );
+      }
     }
 
     String photoUrl = document['photoUrl'];
@@ -332,7 +344,8 @@ class _UsersChatPageState extends State<UsersChatPage> {
   } // getRow()
 
 
-  void deleteChat(String chatRoomID, chatRoomName){
+  void deleteChat(String chatRoomID, chatRoomName) async{
+    await SystemChannels.platform.invokeMethod<void>('HapticFeedback.vibrate');
     showDialog(
         context: context,
         builder: (BuildContext context) {
