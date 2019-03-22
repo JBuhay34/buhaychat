@@ -1,10 +1,21 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:buhaychat/object/MessageWithPerson.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import "package:intl/intl.dart";
 import 'package:buhaychat/AppColors.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+
+
+
+//void sendMessageFirebase(Map<String, String> params){
+//
+//  CloudFunctions.instance.call(functionName: 'sendMessageToGroupChat', parameters: params);
+//
+//}
 
 class MessageRoomPage extends StatefulWidget {
   String UID;
@@ -83,7 +94,18 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
 //      });
 //    });
 
+    // sometimes firebase doesn't completely get the photoUrl or userName
+    if(userPhotoUrl == null || userPhotoUrl == "" || userName == null || userName == ""){
 
+      FirebaseAuth.instance.currentUser().then((value) async {
+        FirebaseUser firebaseUser = value;
+
+        UID = await firebaseUser.uid;
+        userEmail = await firebaseUser.email;
+        userPhotoUrl = await firebaseUser.photoUrl;
+        userName = await firebaseUser.displayName;
+        });
+    }
 
 
     bottomContainer = Container(
@@ -125,7 +147,6 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
                   IconButton(
                     onPressed: () {
                       String message = messageController.text;
-                      print("message: $message");
                       if (message.isNotEmpty) {
 
                         sendMessage(message);
@@ -427,6 +448,14 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
     DocumentReference ref = Firestore.instance.collection('chats')
         .document(chatRoomID).collection("chatmessages").document();
 
+
+//    HashMap chatDetails = HashMap();
+//    chatDetails.putIfAbsent('chat', () {
+//      return chatRoomID;
+//    }
+//    print("chatDetails: " + chatDetails.toString());
+
+
     ref.setData({
       'photoUrl': userPhotoUrl,
       'nickname': userName,
@@ -444,7 +473,6 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
         .collection("members")
         .snapshots().listen((data) =>
         data.documents.forEach((doc) {
-          print(doc["title"]);
 
           DocumentReference ref2 = Firestore.instance.collection('usersChats')
               .document(doc["id"]).collection("chats").document(chatRoomID);
