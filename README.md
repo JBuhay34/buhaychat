@@ -1,16 +1,6 @@
-# buhaychat
+# Chat Application Using Flutter
 
 Chat application imitating iMessage.
 
-## Getting Started
+![photo](https://lh3.googleusercontent.com/nCjj9_UitKlOQ2tWZwrYhBf6wogwaHg5dpXTkq4b-PW9hqOj8rhbkyHoXqcsTP3NzXs=w1440-h620-rw)
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
