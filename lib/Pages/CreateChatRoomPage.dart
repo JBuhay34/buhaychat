@@ -64,7 +64,9 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
               style: TextStyle(color: AppColors.textColor),
                   controller: myController,
                   decoration: InputDecoration(
-                      labelText: 'Chat Room Name',),
+                    labelText: 'Chat Room Name',
+                    labelStyle: TextStyle(color: AppColors.textColor),
+                  ),
                 )
 
             ,

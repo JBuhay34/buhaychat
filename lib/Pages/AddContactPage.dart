@@ -64,8 +64,13 @@ class _AddContactPageState extends State<AddContactPage> {
                   padding: const EdgeInsets.all(25.0),
                   child: TextFormField(
                     controller: myController,
+                    style: TextStyle(color: AppColors.textColor),
+                    cursorColor: AppColors.textColor,
                     decoration: InputDecoration(
-                        labelText: 'Enter the email you would like to add'),
+                      labelText: 'Enter the email you would like to add',
+                      labelStyle: TextStyle(color: AppColors.textColor),
+                    ),
+
                   ))),
             ])
 
