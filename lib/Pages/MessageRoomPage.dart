@@ -1,14 +1,13 @@
 import 'dart:async';
-import 'dart:collection';
 
+import 'package:buhaychat/AppColors.dart';
+import 'package:buhaychat/Pages/MembersOfChatPage.dart';
 import 'package:buhaychat/object/MessageWithPerson.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import "package:intl/intl.dart";
-import 'package:buhaychat/AppColors.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 
 
 
@@ -187,6 +186,22 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
       appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
         title: Text(chatName),
+        actions: <Widget>[
+          IconButton(icon: new Icon(Icons.people),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>
+                    MembersOfChatPage(UID: UID,
+                        userEmail: userEmail,
+                        userName: userName,
+                        userPhotoUrl: userPhotoUrl,
+                        chatRoomID: chatRoomID,
+                        chatName: chatName)),
+              );
+            },)
+          ,
+        ],
       ),
       body: Container(
         color: AppColors.backgroundColor,
@@ -283,6 +298,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
       bottomLeft: Radius.circular(5.0),
       bottomRight: Radius.circular(10.0),
     );
+
     // this Container has the message
     Container MyMessage = Container(
       padding: EdgeInsets.all(8.0),
@@ -319,7 +335,8 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
 
 
         ]
-    ));
+        )
+    );
 
     Row mainChild = (isYou) ? Row(
       mainAxisSize: MainAxisSize.min,

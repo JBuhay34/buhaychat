@@ -23,6 +23,10 @@ class CreateChatRoomPage extends StatefulWidget {
 class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
 
   List<String> membersForGroupChat = List<String>();
+  List<String> memberNamesForGroupChat = List<String>();
+
+  List<String> memberEmailsForGroupChat = List<String>();
+
   // Key: memberID, Value: memberName, memberPhotoUrl
   //HashMap<String, List<String>> memberHashMap = HashMap<String, List<String>>();
 
@@ -39,6 +43,7 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
     this.UID = UID;
     this.userEmail = email;
     this.userPhotoUrl = userPhotoUrl;
+    this.userName = userName;
   }
 
   @override
@@ -212,36 +217,35 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
       ),
       onTap: () {
         //TODO: When a contact is clicked we want to add them to the groupchat, if clicked again and is in list, remove
-        if (membersForGroupChat.contains(friendID)) {
+        if (membersForGroupChat.contains(friendID) &&
+            memberNamesForGroupChat.contains(friendName) &&
+            memberEmailsForGroupChat.contains(friendEmail)) {
+
           membersForGroupChat.remove(friendID);
-          //memberHashMap.remove(friendID);
+          memberNamesForGroupChat.remove(friendName);
+          memberEmailsForGroupChat.remove(friendEmail);
           setState(() {});
+
         } else {
 
-//          List<String> friendNamePhotoUrl = new List<String>();
-//          friendNamePhotoUrl.add(friendName);
-//          friendNamePhotoUrl.add(friendPhotoUrl);
-
           membersForGroupChat.add(friendID);
-          //memberHashMap.putIfAbsent(friendID, membersForGroupChat);
+          memberNamesForGroupChat.add(friendName);
+          memberEmailsForGroupChat.add(friendEmail);
+
 
           setState(() {});
-        }
-        for (String mem in membersForGroupChat) {
-          print("members: " + mem);
         }
       }
       , behavior: HitTestBehavior.opaque,
     );
   } // getRow()
 
-  createGroupChat(String chatName){
+  createGroupChat(String chatName) async {
 
 
     this.chatName = chatName;
     print("chatName" + chatName);
 
-    //TODO: create the groupchat
     DocumentReference ref = Firestore.instance
         .collection("chats")
         .document();
@@ -254,34 +258,46 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
     ref.setData({
       'chatID': refDocID,
       'chatName': chatName,
+      "numMembersInChat": membersForGroupChat.length +1,
     });
 
     // Add yourself to the groupchat
     ref.collection("members").document(UID).setData({
-      "id": UID
+      "id": UID,
+      "nickname": userName,
+      "email": userEmail,
     });
 
     Firestore.instance
         .collection("usersChats")
         .document(UID).collection("chats").document(refDocID).setData({
-      "numMembersInChat": membersForGroupChat.length,
+      "numMembersInChat": membersForGroupChat.length +1,
       'chatID': refDocID,
       'chatName': chatName
     });
 
-    // we add to the usersChats/chats for each member
-    for (String mem in membersForGroupChat) {
 
-      ref.collection("members").document(mem).setData({
-        "id": mem
+    //TODO: We have to implement it so we get to retrieve the user's name and email address of each member
+    // we add to the usersChats/chats for each member
+    for (var i = 0; i < membersForGroupChat.length; i++) {
+      DocumentReference ref = Firestore.instance.collection("chats").document(
+          refDocID).collection("members").document(membersForGroupChat[i]);
+
+
+      ref.setData({
+        "id": membersForGroupChat[i],
+        "nickname": memberNamesForGroupChat[i],
+        "email": memberEmailsForGroupChat[i],
+
       });
 
       Firestore.instance
           .collection("usersChats")
-          .document(mem).collection("chats").document(refDocID).setData({
-        "numMembersInChat": membersForGroupChat.length,
+          .document(membersForGroupChat[i]).collection("chats").document(
+          refDocID).setData({
+        "numMembersInChat": membersForGroupChat.length +1,
         'chatID': refDocID,
-        'chatName': chatName
+        'chatName': chatName,
       });
 
     }
@@ -291,6 +307,10 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
             MaterialPageRoute(builder: (context) => MessageRoomPage( userEmail: userEmail, userName: userName, UID: UID, chatName: chatName, chatRoomID: refDocID, userPhotoUrl: userPhotoUrl,)),
           );
   }
+
+  String friendEmail;
+  String friendName;
+
 
 @override
   void dispose() {
