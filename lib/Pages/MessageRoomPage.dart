@@ -260,6 +260,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
     }
 
     String message = document["message"];
+    String photoUrl = document["photoUrl"];
 
     int dateMessage = document['date'];
     DateTime now = DateTime.now();
@@ -280,7 +281,7 @@ class _MessageRoomPageState extends State<MessageRoomPage> {
       }
     }
 
-    String photoUrl = document['photoUrl'];
+
 
 
     //DateTime dateTimemessage = DateTime.fromMicrosecondsSinceEpoch(int.parse(document['date']));

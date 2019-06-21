@@ -95,7 +95,8 @@ class _MembersOfChatPageState extends State<MembersOfChatPage> {
   Widget _buildMembersChatList(DocumentSnapshot document) {
     Row mainChild = Row(
       children: <Widget>[
-        Text(document["id"]),
+        Text(document["nickname"], style: TextStyle(color: AppColors.textColor,
+            fontFamily: 'Roboto'),),
       ],
     );
 

@@ -24,6 +24,7 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
 
   List<String> membersForGroupChat = List<String>();
   List<String> memberNamesForGroupChat = List<String>();
+  List<String> memberPhotosForGroupChat = List<String>();
 
   List<String> memberEmailsForGroupChat = List<String>();
 
@@ -219,11 +220,12 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
         //TODO: When a contact is clicked we want to add them to the groupchat, if clicked again and is in list, remove
         if (membersForGroupChat.contains(friendID) &&
             memberNamesForGroupChat.contains(friendName) &&
-            memberEmailsForGroupChat.contains(friendEmail)) {
+            memberEmailsForGroupChat.contains(friendEmail) && memberPhotosForGroupChat.contains(friendPhotoUrl)) {
 
           membersForGroupChat.remove(friendID);
           memberNamesForGroupChat.remove(friendName);
           memberEmailsForGroupChat.remove(friendEmail);
+          memberPhotosForGroupChat.remove(friendPhotoUrl);
           setState(() {});
 
         } else {
@@ -231,6 +233,8 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
           membersForGroupChat.add(friendID);
           memberNamesForGroupChat.add(friendName);
           memberEmailsForGroupChat.add(friendEmail);
+          memberPhotosForGroupChat.add(friendPhotoUrl);
+
 
 
           setState(() {});
@@ -266,6 +270,7 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
       "id": UID,
       "nickname": userName,
       "email": userEmail,
+      "photoUrl": userPhotoUrl,
     });
 
     Firestore.instance
@@ -288,7 +293,7 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
         "id": membersForGroupChat[i],
         "nickname": memberNamesForGroupChat[i],
         "email": memberEmailsForGroupChat[i],
-
+        "photoUrl": memberPhotosForGroupChat[i],
       });
 
       Firestore.instance
